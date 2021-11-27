@@ -34,6 +34,7 @@ ic_renne <- function(data_ts){
 }
 
 #From 2.2.1_GM-5.14.1_saron_Switzerland.r
+library(data.table)
 ic_saron <- function(data_column){
   # ARIMA selection
   ## loop computes the AIC and BIC of each ARIMA with a maximum of AR lag = 12
