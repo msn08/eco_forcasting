@@ -341,11 +341,11 @@ mean_baseline <- mean(in_sample[297:303])
 
 
 #*****  Policy 1
-lenght_exo <- length(exoregressor)
-start_exo <- lenght_exo - 30
-policy_1_vax <- exoregressor[start_exo:lenght_exo]
-fit_basic1 <- Arima(covid_ts, order=c(1,3,1),xreg=exoregressor)
-pred_1<-forecast(fit_basic1, h=30,xreg = policy_1_vax )$mean
+
+exoregressor <- vacc_lagged[0:end_train,3]
+policy_1_vax <- vacc_lagged[start_test:total_length,3]
+fit_basic1 <- Arima(in_sample, order=c(1,3,1),xreg=exoregressor)
+pred_1<-forecast(fit_basic1, h=60,xreg = policy_1_vax )$mean
 pred_1
 policy1_full <-pred_1
 
@@ -356,8 +356,8 @@ policy1_week4 <- mean(policy1_full[22:30])
 
 #*****  Policy 2
 policy_2_vax <- policy_1_vax * 1.5
-fit_basic1 <- Arima(covid_ts, order=c(1,3,1),xreg=exoregressor)
-pred_2<-forecast(fit_basic1, h=30,xreg = policy_2_vax )$mean
+fit_basic1 <- Arima(in_sample, order=c(1,3,1),xreg=exoregressor)
+pred_2<-forecast(fit_basic1, h=60,xreg = policy_2_vax )$mean
 pred_2
 policy2_full <-pred_2
 policy2_week1 <- mean(policy2_full[1:7])
@@ -367,9 +367,9 @@ policy2_week4 <- mean(policy2_full[22:30])
 
 
 #*****  Policy 3
-policy_2_vax <- policy_1_vax * 2
-fit_basic1 <- Arima(covid_ts, order=c(1,3,1),xreg=exoregressor)
-pred_3<-forecast(fit_basic1, h=30,xreg = policy_2_vax )$mean
+policy_3_vax <- policy_1_vax * 2
+fit_basic1 <- Arima(in_sample, order=c(1,3,1),xreg=exoregressor)
+pred_3<-forecast(fit_basic1, h=60,xreg = policy_3_vax )$mean
 pred_3
 policy3_full <-pred_3
 policy3_week1 <- mean(policy3_full[1:7])
@@ -379,9 +379,9 @@ policy3_week4 <- mean(policy3_full[22:30])
 
 
 #*****  Policy 4
-policy_2_vax <- policy_1_vax * 0.5
+policy_4_vax <- policy_1_vax * 0.5
 fit_basic1 <- Arima(covid_ts, order=c(1,3,1),xreg=exoregressor)
-pred_4<-forecast(fit_basic1, h=30,xreg = policy_2_vax )$mean
+pred_4<-forecast(fit_basic1, h=60,xreg = policy_4_vax )$mean
 pred_4
 policy4_full <-pred_4
 
@@ -390,12 +390,13 @@ policy4_week2 <- mean(policy4_full[7:14])
 policy4_week3 <- mean(policy4_full[15:21])
 policy4_week4 <- mean(policy4_full[22:30])
 
-pol2 <- c(1-(policy2_week1/policy1_week1),1-(policy2_week2/policy1_week2),
-          1-(policy2_week3/policy1_week3),1-(policy2_week4/policy1_week4))
-pol3 <- c(1-(policy3_week1/policy1_week1),1-(policy3_week2/policy1_week2),
-          1-(policy3_week3/policy1_week3),1-(policy3_week4/policy1_week4))
-pol4 <- c(1-(policy4_week1/policy1_week1),1-(policy4_week2/policy1_week2),
-          1-(policy4_week3/policy1_week3),1-(policy4_week4/policy1_week4))
+pol2 <- c((1-(policy2_week1/policy1_week1))*100,(1-(policy2_week2/policy1_week2))*100,
+          (1-(policy2_week3/policy1_week3))*100,(1-(policy2_week4/policy1_week4))*100)
+pol3 <- c((1-(policy3_week1/policy1_week1))*100,(1-(policy3_week2/policy1_week2))*100,
+          (1-(policy3_week3/policy1_week3))*100,(1-(policy3_week4/policy1_week4))*100)
+pol4 <- c((1-(policy4_week1/policy1_week1))*100,(1-(policy4_week2/policy1_week2))*100,
+          (1-(policy4_week3/policy1_week3))*100,(1-(policy4_week4/policy1_week4))*100)
 
-
-
+plot(pol2,ylim=c(-2,4),type="l",col="black")
+lines(pol3,col="green")
+lines(pol4,col="red")
