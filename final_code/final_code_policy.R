@@ -230,8 +230,8 @@ for(i in 1:10){
                                        out_sample,vacc_lagged[start_test:total_length,1:i])
   print(table)
 }
-#out of sample MAPE: 40.40281
-# i=3
+#out of sample MAPE: 39.08318
+# i=10
 
 #Ilias's computer:
 #out of sample MAPE: 
@@ -293,7 +293,7 @@ summary(fit_basic1)
 qqnorm(forecast_1$residuals)
 print("MAPE:")
 print(MAPE(forecast_1$mean, out_sample) * 100)
-#out of sample MAPE 9.213887
+#out of sample MAPE 9.20857
 #Ilias's computer:
 #out of sample MAPE: 
 
@@ -308,7 +308,7 @@ summary(fit_basic1)
 qqnorm(forecast_1$residuals)
 print("MAPE:")
 print(MAPE(forecast_1$mean, out_sample) * 100)
-#out of sample MAPE 8.892258
+#out of sample MAPE 8.877753
 #Ilias's computer: 
 
 #auto_arima
@@ -336,7 +336,7 @@ summary(fit_basic1)
 qqnorm(forecast_1$residuals)
 print("MAPE:")
 print(MAPE(forecast_1$mean, out_sample) * 100)
-#out of sample MAPE 11.4992
+#out of sample MAPE 10.44777
 
 
 fit_basic1 <- Arima(in_sample, order=c(2,3,0),xreg=vacc_lagged[0:end_train,1:3])
@@ -349,7 +349,7 @@ summary(fit_basic1)
 qqnorm(forecast_1$residuals)
 print("MAPE:")
 print(MAPE(forecast_1$mean, out_sample) * 100)
-#out of sample MAPE 12.43478
+#out of sample MAPE 12.43695
 
 fit_basic1 <- Arima(in_sample, order=c(3,2,4),xreg=vacc_lagged[0:end_train,1:3])
 forecast_1<-forecast(fit_basic1, h=periods,xreg= vacc_lagged[start_test:total_length,1:3])
@@ -361,7 +361,7 @@ summary(fit_basic1)
 qqnorm(forecast_1$residuals)
 print("MAPE:")
 print(MAPE(forecast_1$mean, out_sample) * 100)
-#out of sample MAPE: 20.40664
+#out of sample MAPE: 20.40329
 
 
 fit_basic1 <- Arima(in_sample, order=c(1,2,3),xreg=vacc_lagged[0:end_train,1:3])
@@ -388,7 +388,7 @@ summary(fit_basic1)
 qqnorm(forecast_1$residuals)
 print("MAPE:")
 print(MAPE(forecast_1$mean, out_sample) * 100)
-#out of sample MAPE: 10.98426
+#out of sample MAPE: 10.98751
 #bic
 fit_basic1 <- Arima(in_sample, order=c(0,3,2),xreg=vacc_lagged[0:end_train,1:3])
 forecast_1<-forecast(fit_basic1, h=periods,xreg= vacc_lagged[start_test:total_length,1:3])
@@ -413,7 +413,7 @@ summary(fit_basic1)
 qqnorm(forecast_1$residuals)
 print("MAPE:")
 print(MAPE(forecast_1$mean, out_sample) * 100)
-#out of sample MAPE: 15.06909
+#out of sample MAPE: 15.06924
 
 #bic
 fit_basic1 <- Arima(in_sample, order=c(3,2,1),xreg=vacc_lagged[0:end_train,1:3])
@@ -426,7 +426,7 @@ summary(fit_basic1)
 qqnorm(forecast_1$residuals)
 print("MAPE:")
 print(MAPE(forecast_1$mean, out_sample) * 100)
-#out of sample MAPE:13.0332
+#out of sample MAPE:13.03318
 
 ### OUT OF ALL THE MODELS, ARIMA(6,3,1) is best 
 
@@ -434,26 +434,26 @@ print(MAPE(forecast_1$mean, out_sample) * 100)
 ###### PSEUDO OUT OF SAMPLE EVALUATION
 ######
 #*****  ARIMA (1,3,1)
-covid_ts_diff<- diff(diff(diff(covid_ts)))
+covid_ts_diff<- diff(diff(diff(in_sample)))
 
 #Create initial pasta_dataframe
 pasta_covid<- data.frame(date=1:length(covid_ts_diff), u=covid_ts_diff)
-params <-c(3,0,1)
+params <-c(6,0,1)
 length(covid_ts_diff)
 
 xreg_in <- vacc_lagged[,1:3]
 length(xreg_in)
 #Create pasta_dataframe with forecasts
-new_pasta_covid_exo <- pasta_dataframe_exo(pasta_covid,330,4,30,params,xreg_in)
+new_pasta_covid_exo <- pasta_dataframe_exo(pasta_covid,300,7,30,params,xreg_in)
 
-pasta_plot(new_pasta_covid_exo,330,4,30)
+pasta_plot(new_pasta_covid_exo,300,7,30)
 
 #Get the forecasts into a matrix
-new_matrix_for_exo <- pasta_forecast_matrix(new_pasta_covid_exo,330,4,30)
+new_matrix_for_exo <- pasta_forecast_matrix(new_pasta_covid_exo,300,7,30)
 
 #Matrix of forecast errors
-params <- c(1,0,1)
-y <- new_pasta_covid_exo[1:333,2]#to  match the length
+params <- c(6,0,1)
+y <- new_pasta_covid_exo[1:339,2]#to  match the length
 exoregressor <- vacc_lagged[,3]
 length(y)
 length(exoregressor)
@@ -465,15 +465,15 @@ error_new <- matrix_errors_exo(y,30,exoregressor)
 
 #Evaluation
 ## Mincer-Zarnowitz (MZ) Regression
-mz_test(new_pasta_covid_exo[,2],new_matrix_for_exo,330,4,30)
+mz_test(new_pasta_covid_exo[,2],new_matrix_for_exo,300,7,30)
 #bad 
 
 ## Tau Test
 tau_test(error_new,30)
-# [1,]   -3.329473 -1.3269618 0.18549163
-#  [7,]   -3.311729 -1.6869272 0.09263645
-# [14,]   -6.613985 -1.6736501 0.09524515
-# -12.565392 -1.3641745 0.17359655
+#  [1,]  -4.6119928 -1.6859671 0.09292007
+#  [7,]  -1.9982827 -0.9077041 0.36483512
+# [14,]  -3.2704107 -1.0176302 0.30977840
+# [28,] -12.0185085 -1.1805535 0.23889767
 # unbiased
 
 #Ilias's computer:
@@ -493,9 +493,24 @@ acf(error_new[,14], na.action = na.pass)
 pacf(error_new[,14], na.action = na.pass)
 # optimal
 
-acf(error_new[,30], na.action = na.pass) 
-pacf(error_new[,30], na.action = na.pass)
+acf(error_new[,28], na.action = na.pass) 
+pacf(error_new[,28], na.action = na.pass)
 # optimal
+
+#DM Test
+
+library(forecast)
+#*****  ARIMA (6,3,1)
+fit_basic1 <- Arima(in_sample, order=c(6,3,1),xreg=vacc_lagged[0:end_train,1:3])
+forecast_1<-forecast(fit_basic1, h=periods,xreg= vacc_lagged[start_test:total_length,1:3])
+model <- forecast_1$mean
+
+#*****  ARIMA (1,0,0)
+fit_basic1 <- Arima(in_sample, order=c(1,0,0),xreg=vacc_lagged[0:end_train,1:3])
+forecast_1<-forecast(fit_basic1, h=periods,xreg= vacc_lagged[start_test:total_length,1:3])
+ar1 <- forecast_1$mean
+
+dm.test(model,ar1,h=28)
 
 #Our forcast for 30 days is unbiased and weakly optimal 
 
@@ -526,7 +541,7 @@ vax_perc <- vax_base/swiss_pop
 exoregressor <- vacc_lagged[0:end_train,3]
 
 policy_1_vax <- vacc_lagged[start_test:total_length,3]
-fit_basic1 <- Arima(in_sample, order=c(1,3,1),xreg=exoregressor)
+fit_basic1 <- Arima(in_sample, order=c(6,3,1),xreg=exoregressor)
 pred_1<-forecast(fit_basic1, h=60,xreg = policy_1_vax )$mean
 pred_1
 policy1_full <-pred_1
@@ -543,7 +558,7 @@ policy1_week4 <- mean(policy1_full[22:30])
 
 #*****  Policy 2
 policy_2_vax <- policy_1_vax * 1.38
-fit_basic1 <- Arima(in_sample, order=c(1,3,1),xreg=exoregressor)
+fit_basic1 <- Arima(in_sample, order=c(6,3,1),xreg=exoregressor)
 pred_2<-forecast(fit_basic1, h=60,xreg = policy_2_vax )$mean
 pred_2
 policy2_full <-pred_2
@@ -558,7 +573,7 @@ pol2_perc <- (sum_pol2 + vax_base)/swiss_pop
 
 #*****  Policy 3
 policy_3_vax <- policy_1_vax * 2
-fit_basic1 <- Arima(in_sample, order=c(1,3,1),xreg=exoregressor)
+fit_basic1 <- Arima(in_sample, order=c(6,3,1),xreg=exoregressor)
 pred_3<-forecast(fit_basic1, h=60,xreg = policy_3_vax )$mean
 pred_3
 policy3_full <-pred_3
@@ -573,7 +588,7 @@ pol3_perc <- (sum_pol3 + vax_base)/swiss_pop
 
 #*****  Policy 4
 policy_4_vax <- policy_1_vax * 0.5
-fit_basic1 <- Arima(in_sample, order=c(1,3,1),xreg=exoregressor)
+fit_basic1 <- Arima(in_sample, order=c(6,3,1),xreg=exoregressor)
 pred_4<-forecast(fit_basic1, h=60,xreg = policy_4_vax )$mean
 pred_4
 policy4_full <-pred_4
@@ -588,13 +603,13 @@ pol4_perc <- (sum_pol4 + vax_base)/swiss_pop
 
 #*****  Policy 5
 policy_5_vax <- policy_1_vax * 3.31
-fit_basic1 <- Arima(in_sample, order=c(1,3,1),xreg=exoregressor)
+fit_basic1 <- Arima(in_sample, order=c(6,3,1),xreg=exoregressor)
 pred_5<-forecast(fit_basic1, h=60,xreg = policy_5_vax )$mean
 pred_5
 policy5_full <-pred_5
 avg_pol5 <- mean(policy5_full)
 (avg_pol5/avg_in_sample)*100
-sum(policy1_full-policy5_full)
+sum(policy1_full)-sum(policy5_full)
 policy5_week1 <- mean(policy5_full[1:7])
 policy5_week2 <- mean(policy5_full[7:14])
 policy5_week3 <- mean(policy5_full[15:21])
@@ -613,7 +628,7 @@ pol5 <- c((1-(policy5_week1/policy1_week1))*100,(1-(policy5_week2/policy1_week2)
           (1-(policy5_week3/policy1_week3))*100,(1-(policy5_week4/policy1_week4))*100)
 
 
-plot(pol2,ylim=c(-2,10),type="l",col="black",xlab="Weeks",
+plot(pol2,ylim=c(-5,20),type="l",col="black",xlab="Weeks",
      ylab="Reduction of Daily Cases in Percent",main="4 Policies Compared")
 lines(pol3,col="green")
 lines(pol4,col="red")
@@ -633,7 +648,7 @@ lines(policy1_full,col="red")
 lines(policy5_full,col="blue")
 
 
-
+#THIS IS HOW I KNOW IT IS CORRECT
 
 ###### Literature review on the impact of vaccines
 
