@@ -698,3 +698,12 @@ lines(policy5_full,col="blue")
 #increases about 38%
 #https://www.swissinfo.ch/eng/swiss--vaccine-week--considered-only-partial-success/47113188
 
+
+### Hospital rate
+#taking the lowest estimte from the reseach of last big wave:
+#https://pubmed.ncbi.nlm.nih.gov/33729203/30.
+#0.4%
+
+#From our model forescast 283.7557 people in the hospital
+#The real number is 294.
+#Not bad
